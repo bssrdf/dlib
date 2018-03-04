@@ -122,6 +122,8 @@ class CMakeBuild(build_ext):
         extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
 
         cmake_args = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
+                      '-DCMAKE_GENERATOR_PLATFORM=x64',
+                      '-DCUDA_HOST_COMPILER=C:\\Program Files (x86)\\Microsoft Visual Studio 14.0\\VC\\bin\\cl.exe',
                       '-DPYTHON_EXECUTABLE=' + sys.executable]
 
         cmake_args += cmake_extra_options 
