@@ -1,6 +1,7 @@
 // Copyright (C) 2013  Davis E. King (davis@dlib.net)
 // License: Boost Software License   See LICENSE.txt for the full license.
 
+#include "opaque_types.h"
 #include <dlib/python.h>
 #include <dlib/matrix.h>
 #include <dlib/geometry/vector.h>
@@ -12,7 +13,6 @@ using namespace std;
 
 typedef matrix<double,0,1> cv;
 
-PYBIND11_MAKE_OPAQUE(std::vector<point>);
 
 void cv_set_size(cv& m, long s)
 {
@@ -167,8 +167,8 @@ void bind_vector(py::module& m)
             .def(py::init<long,long>(), py::arg("x"), py::arg("y"))
             .def("__repr__", &point__repr__)
             .def("__str__", &point__str__)
-            .def_property_readonly("x", &point_x, "The x-coordinate of the point.")
-            .def_property_readonly("y", &point_y, "The y-coordinate of the point.")
+            .def_property("x", &point_x, [](point& p, long x){p.x()=x;}, "The x-coordinate of the point.")
+            .def_property("y", &point_y, [](point& p, long y){p.x()=y;}, "The y-coordinate of the point.")
             .def(py::pickle(&getstate<type>, &setstate<type>));
     }
     {

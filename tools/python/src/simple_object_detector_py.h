@@ -3,6 +3,7 @@
 #ifndef DLIB_SIMPLE_OBJECT_DETECTOR_PY_H__
 #define DLIB_SIMPLE_OBJECT_DETECTOR_PY_H__
 
+#include "opaque_types.h"
 #include <dlib/python.h>
 #include <dlib/matrix.h>
 #include <dlib/geometry.h>
@@ -18,7 +19,7 @@ namespace dlib
         std::vector<rect_detection>& rect_detections,
         std::vector<rectangle>& rectangles,
         std::vector<double>& detection_confidences,
-        std::vector<double>& weight_indices
+        std::vector<unsigned long>& weight_indices
     )
     {
         rectangles.clear();
@@ -40,7 +41,7 @@ namespace dlib
         const unsigned int upsampling_amount,
         const double adjust_threshold,
         std::vector<double>& detection_confidences,
-        std::vector<double>& weight_indices
+        std::vector<unsigned long>& weight_indices
     )
     {
         pyramid_down<2> pyr;
@@ -120,7 +121,7 @@ namespace dlib
         const unsigned int upsampling_amount,
         const double adjust_threshold,
         std::vector<double>& detection_confidences,
-        std::vector<double>& weight_indices
+        std::vector<unsigned long>& weight_indices
     )
     {
         pyramid_down<2> pyr;
@@ -202,7 +203,7 @@ namespace dlib
     )
     {
         std::vector<double> detection_confidences;
-        std::vector<double> weight_indices;
+        std::vector<unsigned long> weight_indices;
         const double adjust_threshold = 0.0;
 
         return run_detector_with_upscale1(detector, img, upsampling_amount,
@@ -219,7 +220,7 @@ namespace dlib
         py::tuple t;
 
         std::vector<double> detection_confidences;
-        std::vector<double> weight_indices;
+        std::vector<unsigned long> weight_indices;
         std::vector<rectangle> rectangles;
 
         rectangles = run_detector_with_upscale1(detector, img, upsampling_amount,
@@ -227,7 +228,8 @@ namespace dlib
                                                 detection_confidences, weight_indices);
 
         return py::make_tuple(rectangles,
-                              detection_confidences, weight_indices);
+                              vector_to_python_list(detection_confidences), 
+                              vector_to_python_list(weight_indices));
     }
 
     inline py::tuple run_multiple_rect_detectors (
@@ -243,11 +245,11 @@ namespace dlib
         // Now copy the data into dlib based objects.
         for (unsigned long i = 0; i < num_detectors; ++i)
         {
-          vector_detectors.push_back(detectors[i].cast<simple_object_detector >());
+            vector_detectors.push_back(detectors[i].cast<simple_object_detector >());
         }
 
         std::vector<double> detection_confidences;
-        std::vector<double> weight_indices;
+        std::vector<unsigned long> weight_indices;
         std::vector<rectangle> rectangles;
 
         rectangles = run_detectors_with_upscale1(vector_detectors, img, upsampling_amount,
@@ -255,7 +257,8 @@ namespace dlib
                                                 detection_confidences, weight_indices);
 
         return py::make_tuple(rectangles,
-                              detection_confidences, weight_indices);
+                              vector_to_python_list(detection_confidences),
+                              vector_to_python_list(weight_indices));
     }
 
 
